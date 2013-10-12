@@ -110,9 +110,15 @@
 								}
 
 								// Fill Datastream UI with Data
-								$('#feed-' + feedId + ' .datastreams .datastream-' + datastream.id + ' .datastream-name').html(datastream.max_value);
-								$('#feed-' + feedId + ' .datastreams .datastream-' + datastream.id + ' .datastream-value').html(datastream.current_value);
+								var simbolo = '';
+								if(datastream && datastream.unit)
+									simbolo = ' ' + datastream.unit.symbol;
+								$('#feed-' + feedId + ' .datastreams .datastream-' + datastream.id + ' .datastream-name').html(datastream.tags);
+								$('#feed-' + feedId + ' .datastreams .datastream-' + datastream.id + ' .datastream-value').html('Ultima lettura: ' + datastream.current_value);
+								$('#feed-' + feedId + ' .datastreams .datastream-' + datastream.id + ' .datastream-minvalue').html('Minimo: ' + datastream.min_value + simbolo);
+								$('#feed-' + feedId + ' .datastreams .datastream-' + datastream.id + ' .datastream-maxvalue').html('Massimo: ' + datastream.max_value + simbolo);
 
+								/*
 								// Include Datastream Unit (If Available)
 								if(datastream.unit) {
 									if(datastream.unit.symbol) {
@@ -124,13 +130,15 @@
 									$('#feed-' + feedId + ' .datastreams .datastream-' + datastream.id + ' .datastream-value').html(datastream.current_value);
 								}
 								$('.datastream-' + datastream.id).removeClass('hidden');
-
+								*/
+								
 								// Historical Datapoints
 								if(datastreamData.datapoints) {
 
 									// Add Each Datapoint to Array
 									datastreamData.datapoints.forEach(function(datapoint) {
-										points.push({x: new Date(datapoint.at).getTime()/1000.0, y: parseFloat(datapoint.value)});
+										var dataMisura = datapoint.at;
+										points.push({x: new Date(dataMisura).getTime()/1000.0, y: parseFloat(datapoint.value)});
 									});
 
 									// Add Datapoints Array to Graph Series Array
@@ -149,7 +157,7 @@
 										width: 600,
 										height: 200,
 										renderer: 'line',
-										min: parseFloat(datastream.min_value) - .25*(parseFloat(datastream.max_value) - parseFloat(datastream.min_value)),
+										min: parseFloat(datastream.min_value) - .25*(parseFloat(datastream.max_value) - parseFloat(datastream.id)),
 										max: parseFloat(datastream.max_value) + .25*(parseFloat(datastream.max_value) - parseFloat(datastream.min_value)),
 										padding: {
 											top: 0.02,
@@ -252,7 +260,7 @@
 					$('#feed-' + data.id + ' .creator .value').html('<a href="' + data.creator + '">' + creator + '</a>');
 
 					// Date Updated
-					$('#feed-' + data.id + ' .updated .value').html(data.updated);
+					$('#feed-' + data.id + ' .updated .value').html(new Date(data.updated));
 
 					// Tags
 					if(data.tags) {
